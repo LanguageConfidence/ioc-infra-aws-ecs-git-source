@@ -1,0 +1,26 @@
+{
+	"name": "Infra-Refine",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": { 
+			"VARIANT": "16"
+		}
+	},
+
+	"postCreateCommand": "npm i -g aws-cdk",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"dbaeumer.vscode-eslint",
+				"GitHub.copilot"
+			]
+		}
+	},
+	"remoteUser": "node",
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {
+            "version": "latest"
+		},
+		"aws-cli": "latest"
+	}
+}
