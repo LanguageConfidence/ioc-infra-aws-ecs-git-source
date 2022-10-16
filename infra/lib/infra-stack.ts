@@ -15,20 +15,19 @@ export class InfraStack extends cdk.Stack {
       code: lambda.Code.fromAsset("lambda"),
     });
 
-    const bucket = new s3.Bucket(this, 'MyAudioBucket', {
+    const audiobucket = new s3.Bucket(this, 'MyAudioBucket', {
       autoDeleteObjects: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY
     });
 
-    fn.addEventSource(new S3EventSource(bucket, {
+    fn.addEventSource(new S3EventSource(audiobucket, {
       events: [ s3.EventType.OBJECT_CREATED],
-      // filters: [ { prefix: 'subdir/' } ], // optional
     }));
     
 
     const s3ReadBucket = new iam.PolicyStatement({
       actions: ['s3:GetObject'],
-      resources: ['arn:aws:s3:::*'],
+      resources: [`${audiobucket.bucketArn}/*`],
       effect: iam.Effect.ALLOW
     });
 
