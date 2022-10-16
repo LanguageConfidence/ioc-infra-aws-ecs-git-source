@@ -15,7 +15,8 @@ exports.handler = async (event, context) => {
         Key: key,
     }; 
     try {
-        const { ContentType } = await s3.getObject(params).promise();
+        const { ContentType, Body } = await s3.getObject(params).promise();
+        console.log('BODY:', Body);
         console.log('CONTENT TYPE:', ContentType);
         return ContentType;
     } catch (err) {
