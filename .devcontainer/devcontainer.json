@@ -7,7 +7,7 @@
 		}
 	},
 
-	"postCreateCommand": "npm i -g aws-cdk",
+	"postCreateCommand": "npm i -g aws-cdk && yarn install",
 	"customizations": {
 		"vscode": {
 			"extensions": [
