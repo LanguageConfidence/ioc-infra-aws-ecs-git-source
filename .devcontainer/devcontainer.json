@@ -1,11 +1,6 @@
 {
-	"name": "Infra-Refine",
-	"build": {
-		"dockerfile": "Dockerfile",
-		"args": { 
-			"VARIANT": "16"
-		}
-	},
+	"name": "Infra",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:16",
 
 	"postCreateCommand": "npm i -g aws-cdk && yarn install",
 	"customizations": {
@@ -18,9 +13,8 @@
 	},
 	"remoteUser": "node",
 	"features": {
-		"ghcr.io/devcontainers/features/github-cli:1": {
-            "version": "latest"
-		},
-		"aws-cli": "latest"
+		"ghcr.io/devcontainers/features/aws-cli:1": {},
+		"ghcr.io/devcontainers/features/docker-from-docker:1": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {}
 	}
 }
