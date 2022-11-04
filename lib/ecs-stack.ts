@@ -18,8 +18,8 @@ export class EcsStack extends cdk.Stack {
         vpc: vpc,
     });
   
-      // Create a load-balanced Fargate service and make it public
-    new ecs_patterns.ApplicationLoadBalancedFargateService(this, "EcsFargateService", {
+    // Create a load-balanced Fargate service and make it public
+    const ecs_app = new ecs_patterns.ApplicationLoadBalancedFargateService(this, "EcsFargateService", {
         cluster: cluster, // Required
         cpu: 2048, // Default is 256
         desiredCount: 1, // Default is 1
@@ -27,6 +27,7 @@ export class EcsStack extends cdk.Stack {
         memoryLimitMiB: 4096, // Default is 512
         publicLoadBalancer: true, // Default is true
         circuitBreaker: { rollback: true },
+        enableExecuteCommand: true
     });
   }
 }
