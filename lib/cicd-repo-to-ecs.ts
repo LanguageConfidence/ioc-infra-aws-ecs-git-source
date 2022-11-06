@@ -8,7 +8,7 @@ import * as ecs_patterns from "aws-cdk-lib/aws-ecs-patterns";
 import { GithubRepo } from './config';
 import { SecretValue } from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
-
+import { BaseFargateSv } from './fargate_service_construct';
 
 interface Git2EcsProps extends cdk.StackProps {
   gitRepo: GithubRepo;
@@ -23,10 +23,9 @@ export class CiCdGit2EcsStack extends cdk.Stack {
     
     this.uidService = props.gitRepo.owner + '-' + props.gitRepo.repo;
 
-    const ecrRepo = new ecr.Repository(this, this.uidService);
+    const ecrRepo = new ecr.Repository(this, this.uidService + "-ecr-repo");
 
-
-    const RepoSource = codebuild.Source.gitHub({
+    const repoSource = codebuild.Source.gitHub({
         owner: props.gitRepo.owner,
         repo: props.gitRepo.repo,
         webhook: true, // optional, default: true if `webhookfilteres` were provided, false otherwise
@@ -34,6 +33,20 @@ export class CiCdGit2EcsStack extends cdk.Stack {
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andBranchIs(props.gitRepo.prodBranch),
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andBranchIs(props.gitRepo.devBranch),
         ], // optional, by default all pushes and pull requests will trigger a build
+    });
+
+    const fargateService = new BaseFargateSv(this, this.uidService + "-fargate-service", {
+        cluster: props.cluster,
+        cpu: 256,
+        memoryLimitMiB: 512,
+        desiredCount: 1,
+        maxCapacity: 2,
+        scaleOnCpuUtilizationPer: 50,
+        listenPort: 80,}
+    )
+
+    new cdk.CfnOutput(this, 'ServiceUrl', { 
+      value: fargateService.loadBalancer.loadBalancerDnsName 
     });
 
     new cdk.CfnOutput(this, 'ecrRepoUri', {
