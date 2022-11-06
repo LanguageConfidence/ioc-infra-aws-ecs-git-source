@@ -1,7 +1,7 @@
 
 export interface GithubRepo {
-    githubOwner: string;
-    githubRepo: string;
-    githubProdBranch: string;
-    githubDevBranch: string;
+    owner: string;
+    repo: string;
+    prodBranch: string;
+    devBranch: string;
 }

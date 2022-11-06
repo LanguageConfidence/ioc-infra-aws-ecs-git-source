@@ -20,10 +20,10 @@ export class SecretStack extends cdk.Stack {
             this, 'githubToken', githubSecret.secretName).secretValue;
 
         this.asrRepo = {
-            githubOwner: 'egochao',
-            githubRepo: 'whisper_torchserve',
-            githubProdBranch: 'main',
-            githubDevBranch: 'develop',
+            owner: 'egochao',
+            repo: 'whisper_torchserve',
+            prodBranch: 'main',
+            devBranch: 'develop',
         }
         new cdk.CfnOutput(this, 'GithubTokenArn', {
             value: githubSecret.secretArn,
