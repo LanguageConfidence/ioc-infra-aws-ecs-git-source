@@ -18,6 +18,10 @@ a. Deploy and setup your secret first
 cdk deploy SecretStack
 ```
 
+Then your_secret_arn will show up in the output log
+
+Set value for secret by
+
 ```
 aws secretsmanager put-secret-value --secret-id your_secret_arn --secret-string your_github_token
 ```
