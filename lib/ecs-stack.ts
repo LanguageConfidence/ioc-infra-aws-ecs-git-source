@@ -3,10 +3,17 @@ import { Construct } from 'constructs';
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as ecs from "aws-cdk-lib/aws-ecs";
 import * as ecs_patterns from "aws-cdk-lib/aws-ecs-patterns";
+import { GithubRepo } from './config';
+import { SecretValue } from 'aws-cdk-lib';
 
+
+interface EcsClusterProps extends cdk.StackProps {
+  asrRepo: GithubRepo;
+  githubToken: SecretValue;
+}
 
 export class EcsStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: EcsClusterProps) {
     super(scope, id, props);
 
 
@@ -19,7 +26,7 @@ export class EcsStack extends cdk.Stack {
     });
   
     // Create a load-balanced Fargate service and make it public
-    const ecs_app = new ecs_patterns.ApplicationLoadBalancedFargateService(this, "EcsFargateService", {
+    const asrEcs = new ecs_patterns.ApplicationLoadBalancedFargateService(this, "EcsFargateService", {
         cluster: cluster, // Required
         cpu: 2048, // Default is 256
         desiredCount: 1, // Default is 1
@@ -29,5 +36,10 @@ export class EcsStack extends cdk.Stack {
         circuitBreaker: { rollback: true },
         enableExecuteCommand: true
     });
+
+    new cdk.CfnOutput(this, 'EcsApp', {
+        value: asrEcs.toString(),
+    });
+  
   }
 }

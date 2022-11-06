@@ -19,7 +19,15 @@ cdk deploy SecretStack
 ```
 
 ```
-aws secretsmanager put-secret-value --secret-id secret_arn --secret-string your_github_token
+aws secretsmanager put-secret-value --secret-id your_secret_arn --secret-string your_github_token
 ```
 b. Deploy the main application
 
+
+
+## 3. Useful commands
+
+Checking secret value
+```
+aws secretsmanager get-secret-value --secret-id your_secret_arn"
+```

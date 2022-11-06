@@ -1,9 +1,7 @@
-import { SecretValue } from "aws-cdk-lib";
 
-export interface GithubCredentials {
+export interface GithubRepo {
     githubOwner: string;
     githubRepo: string;
     githubProdBranch: string;
     githubDevBranch: string;
-    githubToken: SecretValue;
 }

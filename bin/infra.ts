@@ -9,4 +9,7 @@ const app = new cdk.App();
 // new ProcessAudioStack(app, 'ProcessAudioStack', {});
 const secret = new SecretStack(app, 'SecretStack', {});
 
-const ecs_cluster = new EcsStack(app, 'EcsStack', {});
+const ecs_cluster = new EcsStack(app, 'EcsStack', {
+    asrRepo: secret.asrRepo,
+    githubToken: secret.githubToken,
+});
