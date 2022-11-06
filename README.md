@@ -1,14 +1,25 @@
-# Welcome to your CDK TypeScript project
+# Speech Refine
 
-This is a blank project for CDK development with TypeScript.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## 1. Devevelopment env
 
-## Useful commands
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+## 2. How to deploy
+
+Optional - Bootstrap your region if you use cdk for the first time
+
+```
+cdk bootstrap
+```
+
+a. Deploy and setup your secret first
+
+```
+cdk deploy SecretStack
+```
+
+```
+aws secretsmanager put-secret-value --secret-id secret_arn --secret-string your_github_token
+```
+b. Deploy the main application
+
