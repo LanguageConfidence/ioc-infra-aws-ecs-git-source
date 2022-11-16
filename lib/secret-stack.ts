@@ -11,13 +11,15 @@ export class SecretStack extends cdk.Stack {
 
     public readonly asrRepo: GithubRepo;
     public readonly githubToken: SecretValue;
+    public readonly githubTokenName: string;
 
     constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
         super(scope, id, props);
 
         const githubSecret = new secretsmanager.Secret(this, 'githubSecret')
+        this.githubTokenName = githubSecret.secretName;
         this.githubToken = secretsmanager.Secret.fromSecretNameV2(
-            this, 'githubToken', githubSecret.secretName).secretValue;
+            this, 'githubToken', this.githubTokenName).secretValue;
 
         this.asrRepo = {
             owner: 'egochao',
@@ -27,6 +29,9 @@ export class SecretStack extends cdk.Stack {
         }
         new cdk.CfnOutput(this, 'GithubTokenArn', {
             value: githubSecret.secretArn,
+        });
+        new cdk.CfnOutput(this, 'GithubTokenName', {
+            value: this.githubTokenName,
         });
     }
 }

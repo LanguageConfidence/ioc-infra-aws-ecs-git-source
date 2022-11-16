@@ -15,5 +15,6 @@ const ecs_cluster = new EcsStack(app, 'EcsStack', {});
 const cicd = new CiCdGit2EcsStack(app, 'CiCdGit2EcsStack', {
     gitRepo: secret.asrRepo,
     githubToken: secret.githubToken,
+    githubTokenName: secret.githubTokenName,
     cluster: ecs_cluster.myCluster,
 });
