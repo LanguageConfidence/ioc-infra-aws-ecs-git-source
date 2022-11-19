@@ -13,13 +13,14 @@ interface Git2RegistryProps extends cdk.StackProps {
 
 export class Git2RegistryStack extends cdk.Stack {
   public readonly uidService: string;
+  public readonly uriEcrRepo: string;
   constructor(scope: Construct, id: string, props: Git2RegistryProps) {
     super(scope, id, props);
     
     this.uidService = `${props.gitRepo.owner}-${props.gitRepo.repo}`;
 
     const ecrRepo = new ecr.Repository(this, `${this.uidService}-ecr-repo`);
-
+    const tag = "latest";
 
     const gitHubSource = codebuild.Source.gitHub({
       owner: props.gitRepo.owner,
@@ -53,7 +54,7 @@ export class Git2RegistryStack extends cdk.Stack {
         phases: {
           pre_build: {
             commands: [
-              'export tag=latest'
+              `export tag=${tag}`
             ],
           },
           build: {
@@ -67,14 +68,10 @@ export class Git2RegistryStack extends cdk.Stack {
       }),
     });
 
+    ecrRepo.grantPullPush(project.role!)
 
+    this.uriEcrRepo = ecrRepo.repositoryUri;
 
-    new cdk.CfnOutput(this, 'uidService', {
-      value: this.uidService,
-    });
-
-    new cdk.CfnOutput(this, 'ecrRepo', {
-      value: ecrRepo.repositoryUri,
-    });
+    new cdk.CfnOutput(this, "ecrImage", { value: `${ecrRepo.repositoryUri}:${tag}`})
 
 }}
