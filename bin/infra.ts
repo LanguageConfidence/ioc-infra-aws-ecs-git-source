@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-// import { ProcessAudioStack } from '../lib/infra-stack';
-import { EcsStack } from '../lib/ecs-stack';
 import { SecretStack } from '../lib/secret-stack';
+import { Git2RegistryStack } from '../lib/github2registry';
 
 const app = new cdk.App();
-// new ProcessAudioStack(app, 'ProcessAudioStack', {});
+
 const secret = new SecretStack(app, 'SecretStack', {});
 
-const ecs_cluster = new EcsStack(app, 'EcsStack', {
-    asrRepo: secret.asrRepo,
+const cicd = new Git2RegistryStack(app, 'Git2RegistryStack', {
+    gitRepo: secret.asrRepo,
     githubToken: secret.githubToken,
+    githubTokenName: secret.githubTokenName,
 });

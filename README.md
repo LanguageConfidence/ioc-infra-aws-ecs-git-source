@@ -33,5 +33,5 @@ b. Deploy the main application
 
 Checking secret value
 ```
-aws secretsmanager get-secret-value --secret-id your_secret_arn"
+aws secretsmanager get-secret-value --secret-id your_secret_arn
 ```
