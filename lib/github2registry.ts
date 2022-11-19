@@ -1,13 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as ecs from "aws-cdk-lib/aws-ecs";
 import * as ecr from 'aws-cdk-lib/aws-ecr';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import { GithubRepo } from './config';
 import { SecretValue } from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
-import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
-import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 interface Git2RegistryProps extends cdk.StackProps {
   gitRepo: GithubRepo;
@@ -34,12 +30,51 @@ export class Git2RegistryStack extends cdk.Stack {
         codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andBranchIs(props.gitRepo.devBranch),
       ], // optional, by default all pushes and pull requests will trigger a build
     });
+    
+    new codebuild.GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
+      accessToken: SecretValue.secretsManager(props.githubTokenName),
+    });
+    
+    const project = new codebuild.Project(this, `${this.uidService}-git-to-ecr`, {
+      projectName: `${this.uidService}-project`,
+      source: gitHubSource,
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_2,
+        privileged: true,
+      },
+      environmentVariables: {
+        'ecr_repo_uri': {
+          value: `${ecrRepo.repositoryUri}`
+        },
+      },
+      badge: true,
+      buildSpec: codebuild.BuildSpec.fromObject({
+        version: '0.2',
+        phases: {
+          pre_build: {
+            commands: [
+              'export tag=latest'
+            ],
+          },
+          build: {
+            commands: [
+              'docker build -t $ecr_repo_uri:$tag .',
+              '$(aws ecr get-login --no-include-email)',
+              'docker push $ecr_repo_uri:$tag',
+            ],
+          },
+        },
+      }),
+    });
 
-    // const project = new codebuild.Project(this, `${this.uidService}-git-to-ecr`, {
-    //     projectName: `${this.uidService}-project`,
+
 
     new cdk.CfnOutput(this, 'uidService', {
-        value: this.uidService,
+      value: this.uidService,
+    });
+
+    new cdk.CfnOutput(this, 'ecrRepo', {
+      value: ecrRepo.repositoryUri,
     });
 
 }}
