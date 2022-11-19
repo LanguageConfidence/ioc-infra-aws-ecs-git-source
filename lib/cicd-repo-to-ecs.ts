@@ -6,7 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { GithubRepo } from './config';
 import { SecretValue } from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
-import { BaseFargateSv } from './fargate_service_construct';
+import { BaseFargateSv } from './sp_constructs/fargate_service_construct';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
 

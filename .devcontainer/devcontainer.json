@@ -2,7 +2,7 @@
 	"name": "Infra",
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:16",
 
-	"postCreateCommand": "npm i -g aws-cdk && yarn install",
+	"postCreateCommand": "yarn install",
 	"customizations": {
 		"vscode": {
 			"extensions": [
