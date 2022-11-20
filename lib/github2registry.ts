@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import { GithubRepo } from './config';
-import { SecretValue } from 'aws-cdk-lib';
+import { RemovalPolicy, SecretValue } from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 
 interface Git2RegistryProps extends cdk.StackProps {
@@ -13,14 +13,18 @@ interface Git2RegistryProps extends cdk.StackProps {
 
 export class Git2RegistryStack extends cdk.Stack {
   public readonly uidService: string;
-  public readonly uriEcrRepo: string;
+  public readonly ecrRepo: ecr.Repository;
+  public readonly tag: string;
   constructor(scope: Construct, id: string, props: Git2RegistryProps) {
     super(scope, id, props);
     
     this.uidService = `${props.gitRepo.owner}-${props.gitRepo.repo}`;
 
-    const ecrRepo = new ecr.Repository(this, `${this.uidService}-ecr-repo`);
-    const tag = "latest";
+    this.ecrRepo = new ecr.Repository(this, `${this.uidService}-ecr-repo`, {
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+    
+    this.tag = "latest";
 
     const gitHubSource = codebuild.Source.gitHub({
       owner: props.gitRepo.owner,
@@ -45,7 +49,7 @@ export class Git2RegistryStack extends cdk.Stack {
       },
       environmentVariables: {
         'ecr_repo_uri': {
-          value: `${ecrRepo.repositoryUri}`
+          value: `${this.ecrRepo.repositoryUri}`
         },
       },
       badge: true,
@@ -54,7 +58,7 @@ export class Git2RegistryStack extends cdk.Stack {
         phases: {
           pre_build: {
             commands: [
-              `export tag=${tag}`
+              `export tag=${this.tag}`
             ],
           },
           build: {
@@ -68,10 +72,11 @@ export class Git2RegistryStack extends cdk.Stack {
       }),
     });
 
-    ecrRepo.grantPullPush(project.role!)
-
-    this.uriEcrRepo = ecrRepo.repositoryUri;
-
-    new cdk.CfnOutput(this, "ecrImage", { value: `${ecrRepo.repositoryUri}:${tag}`})
-
+    this.ecrRepo.grantPullPush(project.role!)
+    new cdk.CfnOutput(this, 'EcrRepoName', {
+      value: this.ecrRepo.repositoryName,
+    });
+    new cdk.CfnOutput(this, 'tag', {
+      value: this.tag,
+    });
 }}
