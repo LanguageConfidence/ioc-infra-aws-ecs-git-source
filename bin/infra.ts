@@ -10,8 +10,6 @@ const app = new cdk.App();
 const secret = new SecretStack(app, 'SecretStack', {});
 
 const cicd = new Git2RegistryStack(app, 'Git2RegistryStack', {
-    gitRepo: secret.asrRepo,
-    githubToken: secret.githubToken,
     githubTokenName: secret.githubTokenName,
 });
 

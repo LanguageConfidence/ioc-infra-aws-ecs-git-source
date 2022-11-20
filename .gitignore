@@ -1,3 +1,4 @@
+.env
 yarn.lock
 *dummy*
 *.js

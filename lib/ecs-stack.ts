@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ecs from "aws-cdk-lib/aws-ecs";
 import * as ecsPatterns from "aws-cdk-lib/aws-ecs-patterns";
-import { EcrDockerCredentialOptions } from 'aws-cdk-lib/pipelines';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 
 interface EcsClusterProps extends cdk.StackProps {
