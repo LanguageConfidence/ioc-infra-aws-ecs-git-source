@@ -17,7 +17,10 @@ export class EcsStack extends cdk.Stack {
     super(scope, id, props);
     const clusterName = "MlCluster";
     
-    this.myCluster = new ecs.Cluster(this, `${clusterName}`, {});
+    this.myCluster = new ecs.Cluster(this, `${clusterName}`, {
+      containerInsights: true,
+      enableFargateCapacityProviders: true,
+    });
 
     const ecs_sv = new ecsPatterns.ApplicationLoadBalancedFargateService(this, `${clusterName}SV`, {
       cluster: this.myCluster,
@@ -29,11 +32,34 @@ export class EcsStack extends cdk.Stack {
         containerPort: 8888,
       },
       loadBalancerName: `${clusterName}LB`,
+      capacityProviderStrategies: [
+        {
+          capacityProvider: 'FARGATE_SPOT',
+          weight: 0,
+        },
+        {
+          capacityProvider: 'FARGATE',
+          weight: 1,
+        },
+      ],
     });
     
     ecs_sv.targetGroup.configureHealthCheck({
       path: "/ping",
     });
+    
+    const scalableTarget = ecs_sv.service.autoScaleTaskCount({
+      minCapacity: 1,
+      maxCapacity: 5,
+    });
+    
+    scalableTarget.scaleOnCpuUtilization('CpuScaling', {
+      targetUtilizationPercent: 80,
+    });
+    
+    // scalableTarget.scaleOnMemoryUtilization('MemoryScaling', {
+    //   targetUtilizationPercent: 50,
+    // });
     
     new cdk.CfnOutput(this, 'Url', {
       value: ecs_sv.loadBalancer.loadBalancerDnsName,
