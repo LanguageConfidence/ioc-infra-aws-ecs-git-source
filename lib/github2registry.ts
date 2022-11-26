@@ -15,7 +15,6 @@ export class Git2RegistryStack extends cdk.Stack {
   public readonly tag: string;
   constructor(scope: Construct, id: string, props: Git2RegistryProps) {
     super(scope, id, props);
-    console.log(envConfig)
     this.uidService = `${envConfig.GHOWNER}-${envConfig.GHREPO}`;
 
     this.ecrRepo = new ecr.Repository(this, `${this.uidService}-ecr-repo`, {

@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { SecretStack } from '../lib/secret-stack';
 import { Git2RegistryStack } from '../lib/github2registry';
 import { EcsStack } from '../lib/ecs-stack';
+import { ApigwLambdaMiddleware } from '../lib/apigwlambda';
 
 const app = new cdk.App();
 
@@ -17,3 +18,5 @@ const cluster = new EcsStack(app, 'EcsStack', {
     ecrRepo: cicd.ecrRepo,
     tag: cicd.tag,
 });
+
+const apigw = new ApigwLambdaMiddleware(app, 'ApigwLambdaMiddleware', {});
