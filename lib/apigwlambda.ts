@@ -12,6 +12,7 @@ export class ApigwLambdaMiddleware extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_16_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       handler: 'hello.handler',
+      timeout: cdk.Duration.seconds(30),
     });
 
     const gwLambdaIg = new HttpLambdaIntegration('BooksIntegration', hello_fn);
@@ -23,9 +24,8 @@ export class ApigwLambdaMiddleware extends cdk.Stack {
       integration: gwLambdaIg,
     }); 
 
-
     new cdk.CfnOutput(this, 'HttpApiUrl', {
-      value: httpApi.apiEndpoint ?? 'Something went wrong with the deploy',
+      value: httpApi.apiEndpoint,
     });
   }
 }
