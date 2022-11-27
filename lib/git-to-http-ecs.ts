@@ -7,14 +7,13 @@ import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
 import * as apigatewayv2_integrations from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 import { CpuTaskOnEcs } from './interfaces';
-import { Git2Ecr } from './sp_constructs/git2ecr';
-import { EcsTaskDef } from './sp_constructs/ecs-task-def';
+import { Git2Ecr } from './sp_constructs/git-to-ecr';
+import { EcsTaskDef } from './sp_constructs/ecr-to-task-def';
 
 interface Git2EcsHttpProp extends cdk.StackProps {
   cluster: ecs.Cluster;
   task: CpuTaskOnEcs;
   githubTokenName: string;
-  // tag: string;
 }
 
 export class Git2EcsHttp extends cdk.Stack {
@@ -35,5 +34,7 @@ export class Git2EcsHttp extends cdk.Stack {
       memoryLimitMiB: props.task.memoryLimitMiB,
       containerPort: props.task.containerPort,
     });
+
+
   }
 }
