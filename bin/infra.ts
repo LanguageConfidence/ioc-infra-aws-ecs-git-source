@@ -5,7 +5,7 @@ import { SecretStack } from '../lib/secret-stack';
 import { Git2RegistryStack } from '../lib/github2registry';
 import { EcsStack } from '../lib/ecs-stack';
 import { ApigwLambdaMiddleware } from '../lib/apigwlambda';
-
+import { NetworkingStack } from '../lib/network';
 const app = new cdk.App();
 
 const secret = new SecretStack(app, 'SecretStack', {});
@@ -14,7 +14,11 @@ const cicd = new Git2RegistryStack(app, 'Git2RegistryStack', {
     githubTokenName: secret.githubTokenName,
 });
 
+
+const network = new NetworkingStack(app, 'NetworkingStack', {});
+
 const cluster = new EcsStack(app, 'EcsStack', {
+    vpc: network.vpc,
     ecrRepo: cicd.ecrRepo,
     tag: cicd.tag,
 });
