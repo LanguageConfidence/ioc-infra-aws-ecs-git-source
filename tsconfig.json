@@ -20,7 +20,6 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "typeRoots": [
-      "./lib/utils/global.d.ts",
       "./node_modules/@types"
     ]
   },
