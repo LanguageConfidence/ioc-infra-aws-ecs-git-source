@@ -2,10 +2,11 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { SecretStack } from '../lib/secret-stack';
-import { Git2RegistryStack } from '../lib/github2registry';
+import { Git2EcrStack } from '../lib/github2registry';
 import { EcsStack } from '../lib/ecs-stack';
 import { ApigwLambdaMiddleware } from '../lib/apigwlambda';
 import { ComputeCluster } from '../lib/network';
+import envConfig from './config';
 
 const app = new cdk.App();
 
@@ -16,17 +17,18 @@ const secret = new SecretStack(app, 'SecretStack', {});
 
 const compute = new ComputeCluster(app, 'ComputeCluster', {});
 
-// Define your compute action here /////////////////////////////////
-const cicd = new Git2RegistryStack(app, 'Git2RegistryStack', {
+// Define your apps action here /////////////////////////////////
+const ecrSource = new Git2EcrStack(app, 'Git2EcrStack', {
     githubTokenName: secret.githubTokenName,
+    githubRepo: envConfig.GHREPO,
+    githubOwner: envConfig.GHOWNER,
+    githubBranch: envConfig.GHBRANCH,
 });
 
 
 
-const cluster = new EcsStack(app, 'EcsStack', {
-    vpc: compute.privateVpc,
-    ecrRepo: cicd.ecrRepo,
-    tag: cicd.tag,
-});
-
-const apigw = new ApigwLambdaMiddleware(app, 'ApigwLambdaMiddleware', {});
+// const cluster = new EcsStack(app, 'EcsStack', {
+//     vpc: compute.privateVpc,
+//     ecrRepo: cicd.ecrRepo,
+//     tag: cicd.tag,
+// });

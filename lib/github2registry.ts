@@ -1,21 +1,23 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
-import envConfig from './config';
 import { RemovalPolicy, SecretValue } from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 
-interface Git2RegistryProps extends cdk.StackProps {
+interface Git2EcrProps extends cdk.StackProps {
   githubTokenName: string;
+  githubRepo: string;
+  githubOwner: string;
+  githubBranch: string;
 }
 
-export class Git2RegistryStack extends cdk.Stack {
+export class Git2EcrStack extends cdk.Stack {
   public readonly uidService: string;
   public readonly ecrRepo: ecr.Repository;
   public readonly tag: string;
-  constructor(scope: Construct, id: string, props: Git2RegistryProps) {
+  constructor(scope: Construct, id: string, props: Git2EcrProps) {
     super(scope, id, props);
-    this.uidService = `${envConfig.GHOWNER}-${envConfig.GHREPO}`;
+    this.uidService = `${props.githubOwner}-${props.githubRepo}`;
 
     this.ecrRepo = new ecr.Repository(this, `${this.uidService}-ecr-repo`, {
       removalPolicy: RemovalPolicy.DESTROY,
@@ -24,11 +26,11 @@ export class Git2RegistryStack extends cdk.Stack {
     this.tag = "latest";
 
     const gitHubSource = codebuild.Source.gitHub({
-      owner: envConfig.GHOWNER,
-      repo: envConfig.GHREPO,
+      owner: props.githubOwner,
+      repo: props.githubRepo,
       webhook: true, // optional, default: true if `webhookfilteres` were provided, false otherwise
       webhookFilters: [
-        codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_MERGED).andBranchIs(envConfig.GHBRANCH),
+        codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_MERGED).andBranchIs(props.githubBranch),
       ], // optional, by default all pushes and pull requests will trigger a build
     });
     
