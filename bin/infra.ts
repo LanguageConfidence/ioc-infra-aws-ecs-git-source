@@ -6,7 +6,7 @@ import { Git2EcrStack } from '../lib/github2registry';
 import { EcsStack } from '../lib/ecs-stack';
 import { ComputeCluster } from '../lib/compute';
 import envConfig from './config';
-
+import { CpuTaskOnEcs } from './interfaces';
 const app = new cdk.App();
 
 ////////////////////////////////////////////////////////////////////
@@ -20,6 +20,17 @@ const compute = new ComputeCluster(app, 'ComputeCluster', {});
 // Define your stacks action here /////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 
+const asrTask: CpuTaskOnEcs = {
+    githubRepo: envConfig.GHREPO,
+    githubOwner: envConfig.GHOWNER,
+    githubBranch: envConfig.GHBRANCH,
+    port: 8888,
+    cpu: 2048,
+    memory: 7168,
+};
+
+
+///////////////////////////////////////////////////////////////////
 const ecrSource = new Git2EcrStack(app, 'Git2EcrStack', {
     githubTokenName: secret.githubTokenName,
     githubRepo: envConfig.GHREPO,
