@@ -1,35 +1,37 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
-import envConfig from './config';
 import { RemovalPolicy, SecretValue } from 'aws-cdk-lib';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 
-interface Git2RegistryProps extends cdk.StackProps {
+interface Git2EcrProps{
   githubTokenName: string;
+  githubRepo: string;
+  githubOwner: string;
+  githubBranch: string;
 }
 
-export class Git2RegistryStack extends cdk.Stack {
-  public readonly uidService: string;
+
+export class Git2Ecr extends Construct {
   public readonly ecrRepo: ecr.Repository;
   public readonly tag: string;
-  constructor(scope: Construct, id: string, props: Git2RegistryProps) {
-    super(scope, id, props);
-    console.log(envConfig)
-    this.uidService = `${envConfig.GHOWNER}-${envConfig.GHREPO}`;
 
-    this.ecrRepo = new ecr.Repository(this, `${this.uidService}-ecr-repo`, {
+  constructor(scope: Construct, id: string, props: Git2EcrProps) {
+    super(scope, id);
+    const uidService = `${props.githubOwner}-${props.githubRepo}`;
+
+    this.ecrRepo = new ecr.Repository(this, `${uidService}-ecr-repo`, {
       removalPolicy: RemovalPolicy.DESTROY,
     });
     
     this.tag = "latest";
 
     const gitHubSource = codebuild.Source.gitHub({
-      owner: envConfig.GHOWNER,
-      repo: envConfig.GHREPO,
+      owner: props.githubOwner,
+      repo: props.githubRepo,
       webhook: true, // optional, default: true if `webhookfilteres` were provided, false otherwise
       webhookFilters: [
-        codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_MERGED).andBranchIs(envConfig.GHBRANCH),
+        codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_MERGED).andBranchIs(props.githubBranch),
       ], // optional, by default all pushes and pull requests will trigger a build
     });
     
@@ -37,8 +39,8 @@ export class Git2RegistryStack extends cdk.Stack {
       accessToken: SecretValue.secretsManager(props.githubTokenName),
     });
     
-    const project = new codebuild.Project(this, `${this.uidService}-git-to-ecr`, {
-      projectName: `${this.uidService}-project`,
+    const project = new codebuild.Project(this, `${uidService}-git-to-ecr`, {
+      projectName: `${uidService}-project`,
       source: gitHubSource,
       environment: {
         buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_2,
@@ -76,4 +78,8 @@ export class Git2RegistryStack extends cdk.Stack {
     new cdk.CfnOutput(this, 'tag', {
       value: this.tag,
     });
-}}
+    new cdk.CfnOutput(this, 'CodebuildProjectName', {
+      value: project.projectName,
+    });
+  }
+}

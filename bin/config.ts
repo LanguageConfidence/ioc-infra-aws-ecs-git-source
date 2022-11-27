@@ -47,5 +47,3 @@ const config = getConfig();
 const envConfig = getSanitzedConfig(config);
 
 export default envConfig;
-
-console.log(envConfig)
