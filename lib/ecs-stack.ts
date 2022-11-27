@@ -9,6 +9,7 @@ import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 
 interface EcsClusterProps extends cdk.StackProps {
   vpc: ec2.Vpc;
+  cluster: ecs.Cluster;
   ecrRepo: ecr.Repository;
   tag: string;
 }
@@ -20,10 +21,7 @@ export class EcsStack extends cdk.Stack {
     super(scope, id, props);
     const clusterName = "MlCluster";
     const port = 8888;
-    const cluster = new ecs.Cluster(this, clusterName, {
-      vpc: props.vpc,
-      enableFargateCapacityProviders: true,
-    });
+    const cluster = props.cluster;
 
     const taskDefinition = new ecs.FargateTaskDefinition(this, `${clusterName}-taskdef`, {
       cpu: 2048,

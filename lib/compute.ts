@@ -14,10 +14,9 @@ export class ComputeCluster extends cdk.Stack {
     this.privateVpc = new PrivateVpcEcsUseCase(this, 'SpeechRefineVpc').vpc;
 
 
-    const cluster = new ecs.Cluster(this, `Ml${id}`, {
+    this.cluster = new ecs.Cluster(this, `Ml${id}`, {
       vpc: this.privateVpc,
       enableFargateCapacityProviders: true,
     });
-
   }
 }
