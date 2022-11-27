@@ -6,7 +6,9 @@ import { Git2EcrStack } from '../lib/github2registry';
 import { EcsStack } from '../lib/ecs-stack';
 import { ComputeCluster } from '../lib/compute';
 import envConfig from './config';
-import { CpuTaskOnEcs } from './interfaces';
+import { CpuTaskOnEcs } from '../lib/interfaces';
+import { Git2EcsHttp } from '../lib/git-to-http-ecs';
+
 const app = new cdk.App();
 
 ////////////////////////////////////////////////////////////////////
@@ -24,23 +26,29 @@ const asrTask: CpuTaskOnEcs = {
     githubRepo: envConfig.GHREPO,
     githubOwner: envConfig.GHOWNER,
     githubBranch: envConfig.GHBRANCH,
-    port: 8888,
+    containerPort: 8888,
     cpu: 2048,
-    memory: 7168,
+    memoryLimitMiB: 7168,
 };
+
+const endpoint = new Git2EcsHttp(app, 'Git2EcsHttp', {
+    cluster: compute.cluster,
+    task: asrTask,
+    githubTokenName: secret.githubTokenName,
+});
 
 
 ///////////////////////////////////////////////////////////////////
-const ecrSource = new Git2EcrStack(app, 'Git2EcrStack', {
-    githubTokenName: secret.githubTokenName,
-    githubRepo: envConfig.GHREPO,
-    githubOwner: envConfig.GHOWNER,
-    githubBranch: envConfig.GHBRANCH,
-});
+// const ecrSource = new Git2EcrStack(app, 'Git2EcrStack', {
+//     githubTokenName: secret.githubTokenName,
+//     githubRepo: envConfig.GHREPO,
+//     githubOwner: envConfig.GHOWNER,
+//     githubBranch: envConfig.GHBRANCH,
+// });
 
-const cluster = new EcsStack(app, 'EcsStack', {
-    vpc: compute.privateVpc,
-    cluster: compute.cluster,
-    ecrRepo: ecrSource.ecrRepo,
-    tag: ecrSource.tag,
-});
+// const cluster = new EcsStack(app, 'EcsStack', {
+//     vpc: compute.privateVpc,
+//     cluster: compute.cluster,
+//     ecrRepo: ecrSource.ecrRepo,
+//     tag: ecrSource.tag,
+// });

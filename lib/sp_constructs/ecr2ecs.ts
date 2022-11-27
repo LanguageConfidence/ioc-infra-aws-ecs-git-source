@@ -1,23 +1,23 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as ecs from "aws-cdk-lib/aws-ecs";
 import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as ecs from "aws-cdk-lib/aws-ecs";
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
 import * as apigatewayv2_integrations from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 
-interface Ecr2EcsHttpProp extends cdk.StackProps {
+interface Ecr2HttpEcsProps{
   cluster: ecs.Cluster;
   ecrRepo: ecr.Repository;
   tag: string;
-}
+}  
 
-export class EcsStack extends cdk.Stack {
-  public readonly myCluster: ecs.Cluster;
+export class Ecr2HttpEcs extends Construct {
+  public readonly url: string | undefined;
 
-  constructor(scope: Construct, id: string, props: Ecr2EcsHttpProp) {
-    super(scope, id, props);
+  constructor(scope: Construct, id: string, props: Ecr2HttpEcsProps) {
+    super(scope, id);
     const clusterName = "MlCluster";
     const port = 8888;
     const cluster = props.cluster;
@@ -83,7 +83,7 @@ export class EcsStack extends cdk.Stack {
     });  
 
     // Create API Gateway VPC Link to get the service connected to VPC
-    const vpcLink = new apigatewayv2.VpcLink(this, 'VpcLink', {
+    const vpcLink = new apigatewayv2.VpcLink(this, 'HonkVpcLink', {
       vpc: cluster_vpc,
       subnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
@@ -100,7 +100,7 @@ export class EcsStack extends cdk.Stack {
         },
       ),
     });
-
+    this.url = api.url;
     // Print out the API endpoint after the deploy
     new cdk.CfnOutput(this, 'Url', {
       value: api.url ?? 'Something went wrong',

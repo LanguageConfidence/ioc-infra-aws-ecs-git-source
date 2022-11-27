@@ -3,7 +3,7 @@ export interface CpuTaskOnEcs{
   githubRepo: string;
   githubOwner: string;
   githubBranch: string;
-  port: number;
+  containerPort: number;
   cpu: number;
-  memory: number;
+  memoryLimitMiB: number;
 }
