@@ -2,8 +2,8 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { SecretStack } from '../lib/secret-stack';
-import { Git2EcrStack } from '../lib/github2registry';
-import { EcsStack } from '../lib/ecs-stack';
+import { Git2EcrStack } from '../lib/dummy/github2registry';
+import { EcsStack } from '../lib/dummy/ecs-stack';
 import { ComputeCluster } from '../lib/compute';
 import envConfig from './config';
 import { CpuTaskOnEcs } from '../lib/interfaces';

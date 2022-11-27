@@ -7,7 +7,7 @@ import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
 import * as apigatewayv2_integrations from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 
-interface EcsTaskDefProps{
+interface Ecr2EcsTaskProps{
   ecrRepo: ecr.Repository;
   tag: string;
   cpu: number;
@@ -15,10 +15,10 @@ interface EcsTaskDefProps{
   containerPort: number;
 }  
 
-export class EcsTaskDef extends Construct {
+export class Ecr2EcsTask extends Construct {
   public readonly url: string | undefined;
 
-  constructor(scope: Construct, id: string, props: EcsTaskDefProps) {
+  constructor(scope: Construct, id: string, props: Ecr2EcsTaskProps) {
     super(scope, id);
     const taskName = "MlCluster";
     const containerPort = props.containerPort;

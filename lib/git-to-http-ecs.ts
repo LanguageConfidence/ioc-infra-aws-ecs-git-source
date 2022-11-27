@@ -8,7 +8,7 @@ import * as apigatewayv2_integrations from '@aws-cdk/aws-apigatewayv2-integratio
 import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 import { CpuTaskOnEcs } from './interfaces';
 import { Git2Ecr } from './sp_constructs/git-to-ecr';
-import { EcsTaskDef } from './sp_constructs/ecr-to-task-def';
+import { Ecr2EcsTask } from './sp_constructs/ecr-to-task-def';
 
 interface Git2EcsHttpProp extends cdk.StackProps {
   cluster: ecs.Cluster;
@@ -27,7 +27,7 @@ export class Git2EcsHttp extends cdk.Stack {
       githubBranch: props.task.githubBranch,
     });
 
-    const taskDef = new EcsTaskDef(this, 'EcsTaskDef', {
+    const taskDef = new Ecr2EcsTask(this, 'EcsTaskDef', {
       ecrRepo: ecrSource.ecrRepo,
       tag: ecrSource.tag,
       cpu: props.task.cpu,
