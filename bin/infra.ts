@@ -5,20 +5,26 @@ import { SecretStack } from '../lib/secret-stack';
 import { Git2RegistryStack } from '../lib/github2registry';
 import { EcsStack } from '../lib/ecs-stack';
 import { ApigwLambdaMiddleware } from '../lib/apigwlambda';
-import { NetworkingStack } from '../lib/network';
+import { ComputeCluster } from '../lib/network';
+
 const app = new cdk.App();
 
+////////////////////////////////////////////////////////////////////
+// This section is for basic infrastructure that share across all task
+////////////////////////////////////////////////////////////////////
 const secret = new SecretStack(app, 'SecretStack', {});
 
+const compute = new ComputeCluster(app, 'ComputeCluster', {});
+
+// Define your compute action here /////////////////////////////////
 const cicd = new Git2RegistryStack(app, 'Git2RegistryStack', {
     githubTokenName: secret.githubTokenName,
 });
 
 
-const network = new NetworkingStack(app, 'NetworkingStack', {});
 
 const cluster = new EcsStack(app, 'EcsStack', {
-    vpc: network.vpc,
+    vpc: compute.privateVpc,
     ecrRepo: cicd.ecrRepo,
     tag: cicd.tag,
 });
