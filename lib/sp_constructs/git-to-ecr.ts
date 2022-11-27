@@ -78,5 +78,8 @@ export class Git2Ecr extends Construct {
     new cdk.CfnOutput(this, 'tag', {
       value: this.tag,
     });
+    new cdk.CfnOutput(this, 'CodebuildProjectName', {
+      value: project.projectName,
+    });
   }
 }
