@@ -1,11 +1,6 @@
-import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ecs from "aws-cdk-lib/aws-ecs";
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
-import * as apigatewayv2_integrations from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
-import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 
 interface Ecr2EcsTaskProps{
   ecrRepo: ecr.Repository;
@@ -16,19 +11,19 @@ interface Ecr2EcsTaskProps{
 }  
 
 export class Ecr2EcsTask extends Construct {
-  public readonly url: string | undefined;
+  public readonly taskDefinition: ecs.FargateTaskDefinition;
 
   constructor(scope: Construct, id: string, props: Ecr2EcsTaskProps) {
     super(scope, id);
     const taskName = "MlCluster";
     const containerPort = props.containerPort;
 
-    const taskDefinition = new ecs.FargateTaskDefinition(this, `${id}-taskdef`, {
+    this.taskDefinition = new ecs.FargateTaskDefinition(this, `${id}-taskdef`, {
       cpu: props.cpu,
       memoryLimitMiB: props.memoryLimitMiB,
     });
 
-    const container = taskDefinition.addContainer(`${id}-container`, {
+    const container = this.taskDefinition.addContainer(`${id}-container`, {
       image: ecs.ContainerImage.fromEcrRepository(props.ecrRepo, props.tag),
       logging: ecs.LogDrivers.awsLogs({
         streamPrefix: `${id}-container`,
@@ -36,4 +31,5 @@ export class Ecr2EcsTask extends Construct {
     });
 
     container.addPortMappings({ containerPort: containerPort });
-}}
+  }
+}
