@@ -35,6 +35,5 @@ const endpoint = new Git2EcsHttp(app, `${appName}Service`, {
     cluster: compute.cluster,
     task: asrTask,
     githubTokenName: secret.githubTokenName,
-    isFirstDeploy: true,
+    isFirstDeploy: false,
 });
-console.log(`Endpoint: ${endpoint.url}`);
