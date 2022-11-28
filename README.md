@@ -15,7 +15,7 @@ cdk bootstrap
 a. Deploy and setup your secret first
 
 ```
-cdk deploy SecretStack
+cdk deploy ${APPNAME}SecretStack
 ```
 
 Then your_secret_arn will show up in the output log
@@ -34,4 +34,14 @@ b. Deploy the main application
 Checking secret value
 ```
 aws secretsmanager get-secret-value --secret-id your_secret_arn
+```
+
+List codebuild projects
+```
+aws codebuild list-projects
+```
+
+Start a build in code build
+```
+aws codebuild start-build --project-name your_project_name
 ```

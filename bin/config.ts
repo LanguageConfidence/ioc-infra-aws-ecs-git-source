@@ -9,12 +9,14 @@ interface ENV {
   GHOWNER: string | undefined;
   GHREPO: string | undefined;
   GHBRANCH: string | undefined;
+  APPNAME: string | undefined;
 }
 
 interface Config {
   GHBRANCH: string;
   GHOWNER: string;
   GHREPO: string;
+  APPNAME: string;
 }
 
 // Loading process.env as ENV interface
@@ -24,6 +26,7 @@ const getConfig = (): ENV => {
     GHOWNER: process.env.GHOWNER,
     GHREPO: process.env.GHREPO,
     GHBRANCH: process.env.GHBRANCH,
+    APPNAME: process.env.APPNAME,
   };
 };
 
